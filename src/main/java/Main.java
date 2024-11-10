@@ -127,17 +127,17 @@ public class Main {
 
       } else if (fileContents.startsWith("<=", i)){
 
-        return new Token(TokenType.LESS_EQUAL, "!=", null, lineNo);
+        return new Token(TokenType.LESS_EQUAL, "<=", null, lineNo);
 
       }
       else if (fileContents.startsWith(">=", i)){
 
-        return new Token(TokenType.GREATER_EQUAL, "!=", null, lineNo);
+        return new Token(TokenType.GREATER_EQUAL, ">=", null, lineNo);
 
       }
       else if (fileContents.startsWith("==", i)){
 
-        return new Token(TokenType.EQUAL_EQUAL, "!=", null, lineNo);
+        return new Token(TokenType.EQUAL_EQUAL, "==", null, lineNo);
 
       }
     }
