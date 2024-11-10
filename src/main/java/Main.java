@@ -31,8 +31,17 @@ public class Main {
     // Uncomment this block to pass the first stage
 
      if (!fileContents.isEmpty()) {
-       throw new RuntimeException("Scanner not implemented");
+       for(int i = 0; i<fileContents.length(); i++){
+         if(fileContents.charAt(i) == '('){
+           System.out.println(TokenType.LEFT_PAREN + " ( null");
+         }
+         else{
+           System.out.println(TokenType.RIGHT_PAREN + " ) null");
+         }
+       }
+//       throw new RuntimeException("Scanner not implemented");
      } else {
+
        System.out.println("EOF  null"); // Placeholder, remove this line when implementing the scanner
      }
   }
