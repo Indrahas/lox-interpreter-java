@@ -5,7 +5,48 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Main {
-  static HashMap<Character, TokenType> lexGrammar = new HashMap<>();
+  private static final HashMap<Character, TokenType> lexGrammar = new HashMap<>();
+  static {
+    lexGrammar.put('{', TokenType.LEFT_BRACE);
+    lexGrammar.put('}', TokenType.RIGHT_BRACE);
+    lexGrammar.put('(', TokenType.LEFT_PAREN);
+    lexGrammar.put(')', TokenType.RIGHT_PAREN);
+    lexGrammar.put(',', TokenType.COMMA);
+    lexGrammar.put('.', TokenType.DOT);
+    lexGrammar.put('-', TokenType.MINUS);
+    lexGrammar.put('+', TokenType.PLUS);
+    lexGrammar.put('/', TokenType.SLASH);
+    lexGrammar.put('*', TokenType.STAR);
+    lexGrammar.put(';', TokenType.SEMICOLON);
+
+    lexGrammar.put('!', TokenType.BANG);
+    lexGrammar.put('=', TokenType.EQUAL);
+    lexGrammar.put('>', TokenType.GREATER);
+    lexGrammar.put('<', TokenType.LESS);
+
+    lexGrammar.put('"', TokenType.STRING);
+  }
+
+  private static final HashMap<String, TokenType> keywords =  new HashMap<>();
+
+  static {
+    keywords.put("and",    TokenType.AND);
+    keywords.put("class",  TokenType.CLASS);
+    keywords.put("else",   TokenType.ELSE);
+    keywords.put("false",  TokenType.FALSE);
+    keywords.put("for",    TokenType.FOR);
+    keywords.put("fun",    TokenType.FUN);
+    keywords.put("if",     TokenType.IF);
+    keywords.put("nil",    TokenType.NIL);
+    keywords.put("or",     TokenType.OR);
+    keywords.put("print",  TokenType.PRINT);
+    keywords.put("return", TokenType.RETURN);
+    keywords.put("super",  TokenType.SUPER);
+    keywords.put("this",   TokenType.THIS);
+    keywords.put("true",   TokenType.TRUE);
+    keywords.put("var",    TokenType.VAR);
+    keywords.put("while",  TokenType.WHILE);
+  }
 
   public static void main(String[] args) {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -36,7 +77,7 @@ public class Main {
 
      if (!fileContents.isEmpty()) {
        List<Token> tokens = new java.util.ArrayList<>(List.of());
-       grammarInit();
+//       grammarInit();
 
        boolean syntaxError = false;
        String token;
@@ -108,6 +149,18 @@ public class Main {
            tokens.add(new Token(TokenType.NUMBER,num, Float.parseFloat(num), lineNo) );
             i--;
          }
+         else if(Character.isAlphabetic(curChar) || curChar.equals('_')){
+           int startInd = i;
+           while(Character.isAlphabetic(curChar) || curChar.equals('_')){
+             i++;
+             if(i>=fileContents.length()) break;
+             curChar = fileContents.charAt(i);
+           }
+           String variable = fileContents.substring(startInd, i);
+           tokens.add(new Token(keywords.getOrDefault(variable, TokenType.IDENTIFIER),
+                                variable, null, lineNo));
+           i--;
+         }
          else{
 
            System.err.println("[line "+lineNo+"] Error: Unexpected character: "+token);
@@ -154,26 +207,5 @@ public class Main {
     return null;
   }
 
-  private static void grammarInit() {
-    lexGrammar.put('{', TokenType.LEFT_BRACE);
-    lexGrammar.put('}', TokenType.RIGHT_BRACE);
-    lexGrammar.put('(', TokenType.LEFT_PAREN);
-    lexGrammar.put(')', TokenType.RIGHT_PAREN);
-    lexGrammar.put(',', TokenType.COMMA);
-    lexGrammar.put('.', TokenType.DOT);
-    lexGrammar.put('-', TokenType.MINUS);
-    lexGrammar.put('+', TokenType.PLUS);
-    lexGrammar.put('/', TokenType.SLASH);
-    lexGrammar.put('*', TokenType.STAR);
-    lexGrammar.put(';', TokenType.SEMICOLON);
 
-    lexGrammar.put('!', TokenType.BANG);
-    lexGrammar.put('=', TokenType.EQUAL);
-    lexGrammar.put('>', TokenType.GREATER);
-    lexGrammar.put('<', TokenType.LESS);
-
-    lexGrammar.put('"', TokenType.STRING);
-
-
-  }
 }
