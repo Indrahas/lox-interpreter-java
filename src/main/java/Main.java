@@ -39,6 +39,7 @@ public class Main {
            System.out.println(TokenType.RIGHT_PAREN + " ) null");
          }
        }
+       System.out.println("EOF  null");
 //       throw new RuntimeException("Scanner not implemented");
      } else {
 
