@@ -145,13 +145,27 @@ public class Main {
              if(i>=fileContents.length()) break;
              curChar = fileContents.charAt(i);
            }
-           String num = fileContents.substring(startInd, i);
-           tokens.add(new Token(TokenType.NUMBER,num, Float.parseFloat(num), lineNo) );
+           if(Character.isAlphabetic(curChar) || curChar.equals('_')){
+             while(Character.isAlphabetic(curChar) || curChar.equals('_') || Character.isDigit(curChar)){
+               i++;
+               if(i>=fileContents.length()) break;
+               curChar = fileContents.charAt(i);
+             }
+             String variable = fileContents.substring(startInd, i);
+             tokens.add(new Token(keywords.getOrDefault(variable, TokenType.IDENTIFIER),
+                     variable, null, lineNo));
+
+           }
+           else{
+             String num = fileContents.substring(startInd, i);
+             tokens.add(new Token(TokenType.NUMBER,num, Float.parseFloat(num), lineNo) );
+           }
+
             i--;
          }
          else if(Character.isAlphabetic(curChar) || curChar.equals('_')){
            int startInd = i;
-           while(Character.isAlphabetic(curChar) || curChar.equals('_')){
+           while(Character.isAlphabetic(curChar) || curChar.equals('_') || Character.isDigit(curChar)){
              i++;
              if(i>=fileContents.length()) break;
              curChar = fileContents.charAt(i);
