@@ -96,6 +96,16 @@ public class Main {
            else{
              tokens.add(new Token(tokenType, token, null, lineNo));
            }
+         }
+         else if(Character.isDigit(curChar)){
+           int startInd = i;
+           while(Character.isDigit(curChar) || curChar.equals('.')){
+             i++;
+             if(i>=fileContents.length()) break;
+             curChar = fileContents.charAt(i);
+           }
+           String num = fileContents.substring(startInd, i);
+           tokens.add(new Token(TokenType.NUMBER,num, Float.parseFloat(num), lineNo) );
 
          }
          else{
