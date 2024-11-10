@@ -46,10 +46,10 @@ public class Main {
   }
 
   private static void grammarInit() {
-    lexGrammar.put("(", TokenType.LEFT_BRACE);
-    lexGrammar.put(")", TokenType.RIGHT_BRACE);
-    lexGrammar.put("{", TokenType.LEFT_PAREN);
-    lexGrammar.put("}", TokenType.RIGHT_PAREN);
+    lexGrammar.put("{", TokenType.LEFT_BRACE);
+    lexGrammar.put("}", TokenType.RIGHT_BRACE);
+    lexGrammar.put("(", TokenType.LEFT_PAREN);
+    lexGrammar.put(")", TokenType.RIGHT_PAREN);
     lexGrammar.put(",", TokenType.COMMA);
     lexGrammar.put(".", TokenType.DOT);
     lexGrammar.put("-", TokenType.MINUS);
