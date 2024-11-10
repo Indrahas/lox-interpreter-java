@@ -72,6 +72,11 @@ public class Main {
                i++;
              }
              else if (fileContents.startsWith("//", i)){
+               if(fileContents.indexOf("\n", i)!=-1){
+                 i = fileContents.indexOf("\n", i);
+                 lineNo+=1;
+                 continue;
+               }
                break;
              }
            }
