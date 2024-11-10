@@ -63,6 +63,9 @@ public class Main {
                token = "==";
                i++;
              }
+             else if (fileContents.startsWith("//", i)){
+               break;
+             }
            }
            System.out.println(tokenType + " " + token + " null");
          }
