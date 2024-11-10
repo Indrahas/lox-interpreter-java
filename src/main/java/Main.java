@@ -38,15 +38,19 @@ public class Main {
        boolean syntaxError = false;
        String token;
        TokenType tokenType;
+       Character curChar;
+        int lineNo = 1;
        for(int i = 0; i<fileContents.length(); i++){
-         if(Character.isWhitespace(fileContents.charAt(i)) ||
-           Character.isSpaceChar(fileContents.charAt(i))){
+         curChar = fileContents.charAt(i);
+         if(Character.isWhitespace(curChar) ||
+           Character.isSpaceChar(curChar)){
+           if(curChar.equals('\n')) lineNo++;
            continue;
          }
-         token = String.valueOf(fileContents.charAt(i));
-         if(lexGrammar.containsKey(fileContents.charAt(i)))
+         token = String.valueOf(curChar);
+         if(lexGrammar.containsKey(curChar))
          {
-           tokenType = lexGrammar.get(fileContents.charAt(i));
+           tokenType = lexGrammar.get(curChar);
            if((i+1) < fileContents.length()){
              if(fileContents.startsWith("!=", i)){
                tokenType = TokenType.BANG_EQUAL;
@@ -75,7 +79,7 @@ public class Main {
          }
 
          else{
-           System.err.println("[line 1] Error: Unexpected character: "+token);
+           System.err.println("[line "+lineNo+"] Error: Unexpected character: "+token);
            syntaxError = true;
 
          }
