@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 
 public class Main {
-  static HashMap<String, TokenType> lexGrammar = new HashMap<>();
+  static HashMap<Character, TokenType> lexGrammar = new HashMap<>();
 
   public static void main(String[] args) {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -37,11 +37,34 @@ public class Main {
        grammarInit();
        boolean syntaxError = false;
        String token;
+       TokenType tokenType;
        for(int i = 0; i<fileContents.length(); i++){
-         token = fileContents.substring(i,i+1);
-         if(lexGrammar.containsKey(token))
+         token = String.valueOf(fileContents.charAt(i));
+         if(lexGrammar.containsKey(fileContents.charAt(i)))
          {
-           System.out.println(lexGrammar.get(token) + " " + token + " null");
+           tokenType = lexGrammar.get(fileContents.charAt(i));
+           if((i+1) < fileContents.length()){
+             if(fileContents.startsWith("!=", i)){
+               tokenType = TokenType.BANG_EQUAL;
+               token = "!=";
+               i++;
+             } else if (fileContents.startsWith("<=", i)){
+               tokenType = TokenType.LESS_EQUAL;
+               token = "<=";
+               i++;
+             }
+             else if (fileContents.startsWith(">=", i)){
+               tokenType = TokenType.GREATER_EQUAL;
+               token = ">=";
+               i++;
+             }
+             else if (fileContents.startsWith("==", i)){
+               tokenType = TokenType.EQUAL_EQUAL;
+               token = "==";
+               i++;
+             }
+           }
+           System.out.println(tokenType + " " + token + " null");
          }
 
          else{
@@ -53,7 +76,6 @@ public class Main {
        }
        System.out.println("EOF  null");
        if(syntaxError) System.exit(65);
-//       throw new RuntimeException("Scanner not implemented");
      } else {
 
        System.out.println("EOF  null"); // Placeholder, remove this line when implementing the scanner
@@ -61,26 +83,23 @@ public class Main {
   }
 
   private static void grammarInit() {
-    lexGrammar.put("{", TokenType.LEFT_BRACE);
-    lexGrammar.put("}", TokenType.RIGHT_BRACE);
-    lexGrammar.put("(", TokenType.LEFT_PAREN);
-    lexGrammar.put(")", TokenType.RIGHT_PAREN);
-    lexGrammar.put(",", TokenType.COMMA);
-    lexGrammar.put(".", TokenType.DOT);
-    lexGrammar.put("-", TokenType.MINUS);
-    lexGrammar.put("+", TokenType.PLUS);
-    lexGrammar.put("/", TokenType.SLASH);
-    lexGrammar.put("*", TokenType.STAR);
-    lexGrammar.put(";", TokenType.SEMICOLON);
+    lexGrammar.put('{', TokenType.LEFT_BRACE);
+    lexGrammar.put('}', TokenType.RIGHT_BRACE);
+    lexGrammar.put('(', TokenType.LEFT_PAREN);
+    lexGrammar.put(')', TokenType.RIGHT_PAREN);
+    lexGrammar.put(',', TokenType.COMMA);
+    lexGrammar.put('.', TokenType.DOT);
+    lexGrammar.put('-', TokenType.MINUS);
+    lexGrammar.put('+', TokenType.PLUS);
+    lexGrammar.put('/', TokenType.SLASH);
+    lexGrammar.put('*', TokenType.STAR);
+    lexGrammar.put(';', TokenType.SEMICOLON);
 
-    lexGrammar.put("!", TokenType.BANG);
-    lexGrammar.put("!=", TokenType.BANG_EQUAL);
-    lexGrammar.put("=", TokenType.EQUAL);
-    lexGrammar.put("==", TokenType.EQUAL_EQUAL);
-    lexGrammar.put(">", TokenType.GREATER);
-    lexGrammar.put(">=", TokenType.GREATER_EQUAL);
-    lexGrammar.put("<", TokenType.LESS);
-    lexGrammar.put("<=", TokenType.LESS_EQUAL);
+    lexGrammar.put('!', TokenType.BANG);
+    lexGrammar.put('=', TokenType.EQUAL);
+    lexGrammar.put('>', TokenType.GREATER);
+    lexGrammar.put('<', TokenType.LESS);
+
 
   }
 }
