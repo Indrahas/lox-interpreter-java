@@ -39,6 +39,10 @@ public class Main {
        String token;
        TokenType tokenType;
        for(int i = 0; i<fileContents.length(); i++){
+         if(Character.isWhitespace(fileContents.charAt(i)) ||
+           Character.isSpaceChar(fileContents.charAt(i))){
+           continue;
+         }
          token = String.valueOf(fileContents.charAt(i));
          if(lexGrammar.containsKey(fileContents.charAt(i)))
          {
