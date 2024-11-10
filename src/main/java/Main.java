@@ -80,6 +80,11 @@ public class Main {
            else if(curChar.equals('"')){
 
              int strLiteralEndInd = fileContents.indexOf('"', i+1);
+             if(strLiteralEndInd == -1){
+               System.err.println("[line "+lineNo+"] Error: Unterminated string.");
+               syntaxError = true;
+               break;
+             }
              String strLiteral = fileContents.substring(i, strLiteralEndInd+1);
              tokens.add(new Token(TokenType.STRING,
                                   fileContents.substring(i, strLiteralEndInd+1),
@@ -97,7 +102,6 @@ public class Main {
 
            System.err.println("[line "+lineNo+"] Error: Unexpected character: "+token);
            syntaxError = true;
-
          }
        }
 
