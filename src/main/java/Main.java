@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 public class Main {
   static HashMap<String, TokenType> lexGrammar = new HashMap<>();
+
   public static void main(String[] args) {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
 //    System.err.println("Logs from your program will appear here!");
@@ -34,6 +35,7 @@ public class Main {
 
      if (!fileContents.isEmpty()) {
        grammarInit();
+       boolean syntaxError = false;
        String token;
        for(int i = 0; i<fileContents.length(); i++){
          token = fileContents.substring(i,i+1);
@@ -43,11 +45,14 @@ public class Main {
          }
 
          else{
-           System.out.println("null " + token + " null");
+           System.err.println("[line 1] Error: Unexpected character: "+token);
+           syntaxError = true;
+
          }
 
        }
        System.out.println("EOF  null");
+       if(syntaxError) System.exit(65);
 //       throw new RuntimeException("Scanner not implemented");
      } else {
 
@@ -66,7 +71,6 @@ public class Main {
     lexGrammar.put("+", TokenType.PLUS);
     lexGrammar.put("/", TokenType.SLASH);
     lexGrammar.put("*", TokenType.STAR);
-//    lexGrammar.put(":", TokenType.BANG);
     lexGrammar.put(";", TokenType.SEMICOLON);
 
     lexGrammar.put("!", TokenType.BANG);
