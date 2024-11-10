@@ -38,9 +38,14 @@ public class Main {
        for(int i = 0; i<fileContents.length(); i++){
          token = fileContents.substring(i,i+1);
          if(lexGrammar.containsKey(token))
-         System.out.println(lexGrammar.get(token) + " " + token + " null");
-         else
+         {
+           System.out.println(lexGrammar.get(token) + " " + token + " null");
+         }
+
+         else{
            System.out.println("null " + token + " null");
+         }
+
        }
        System.out.println("EOF  null");
 //       throw new RuntimeException("Scanner not implemented");
@@ -61,6 +66,8 @@ public class Main {
     lexGrammar.put("+", TokenType.PLUS);
     lexGrammar.put("/", TokenType.SLASH);
     lexGrammar.put("*", TokenType.STAR);
+//    lexGrammar.put(":", TokenType.BANG);
+    lexGrammar.put(";", TokenType.SEMICOLON);
 
     lexGrammar.put("!", TokenType.BANG);
     lexGrammar.put("!=", TokenType.BANG_EQUAL);
