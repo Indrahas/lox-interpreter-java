@@ -34,8 +34,13 @@ public class Main {
 
      if (!fileContents.isEmpty()) {
        grammarInit();
+       String token;
        for(int i = 0; i<fileContents.length(); i++){
-         System.out.println(lexGrammar.get(fileContents.substring(i,i+1)) + " " + fileContents.charAt(i) + " null");
+         token = fileContents.substring(i,i+1);
+         if(lexGrammar.containsKey(token))
+         System.out.println(lexGrammar.get(token) + " " + token + " null");
+         else
+           System.out.println("null " + token + " null");
        }
        System.out.println("EOF  null");
 //       throw new RuntimeException("Scanner not implemented");
