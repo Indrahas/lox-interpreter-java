@@ -106,7 +106,7 @@ public class Main {
            }
            String num = fileContents.substring(startInd, i);
            tokens.add(new Token(TokenType.NUMBER,num, Float.parseFloat(num), lineNo) );
-
+            i--;
          }
          else{
 
