@@ -74,12 +74,44 @@ public class Main {
       interpretFile(filename, true);
       if(hadRuntimeError) System.exit(70);
     }
+    else if(command.equals("run")) {
+      interpretFileNew(filename, true);
+      if(hadRuntimeError) System.exit(70);
+    }
     else{
       System.err.println("Unknown command: " + command);
       System.exit(1);
     }
 
+  }
 
+  private static List<Stmt> parseFileNew(String filename, boolean print) {
+
+    boolean hadError = tokenizeFile(filename, false);
+    // Stop if there was a syntax error.
+    if (hadError) return null;
+    ParserNew parser = new ParserNew(tokens);
+//    Expr expression = parser.parse();
+
+    List<Stmt> statements = parser.parse();
+    if(statements.getFirst() == null) System.exit(65);
+
+
+
+    if(print) {
+//      System.out.println(new AstPrinter().print(statements));
+    }
+
+      return statements;
+  }
+
+
+  private static void interpretFileNew(String filename, boolean print) {
+
+    List<Stmt> statements = parseFileNew(filename, false);
+
+    InterpreterNew interpreter = new InterpreterNew();
+    interpreter.interpret(statements, print);
   }
 
   private static Expr parseFile(String filename, boolean print) {
@@ -97,7 +129,7 @@ public class Main {
       System.out.println(new AstPrinter().print(expression));
     }
 
-      return expression;
+    return expression;
   }
   private static void interpretFile(String filename, boolean print) {
 
