@@ -82,6 +82,8 @@ public class Main {
     Parser parser = new Parser(tokens);
     Expr expression = parser.parse();
 
+    if(expression == null) System.exit(65);
+
     // Stop if there was a syntax error.
     if (hadError) return;
 
@@ -144,7 +146,7 @@ public class Main {
 
             int strLiteralEndInd = fileContents.indexOf('"', curInd+1);
             if(strLiteralEndInd == -1){
-              if(print) System.err.println("[line "+lineNo+"] Error: Unterminated string.");
+               System.err.println("[line "+lineNo+"] Error: Unterminated string.");
               syntaxError = true;
               break;
             }
@@ -167,7 +169,7 @@ public class Main {
           curInd = tokenizeWords(curInd, curChar, fileContents, lineNo);
         }
         else{
-          if(print) System.err.println("[line "+lineNo+"] Error: Unexpected character: "+token);
+           System.err.println("[line "+lineNo+"] Error: Unexpected character: "+token);
           syntaxError = true;
         }
       }

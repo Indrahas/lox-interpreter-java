@@ -110,6 +110,11 @@ public class Parser {
 
     private ParseError error(Token token, String message) {
 //        Lox.error(token, message);
+        if (token.type == TokenType.EOF) {
+            System.err.println("[line "+token.line+ "] at end"+ message);
+        } else {
+            System.err.println("[line "+token.line+ "] at '" + token.lexeme + "'"+ message);
+        }
         return new ParseError();
     }
 
