@@ -3,8 +3,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
+import com.interpreter.utils.*;
 
 public class Main {
+  static List<Token> tokens = new java.util.ArrayList<>(List.of());
   private static final HashMap<Character, TokenType> lexGrammar = new HashMap<>();
   static {
     lexGrammar.put('{', TokenType.LEFT_BRACE);
@@ -60,11 +62,35 @@ public class Main {
     String command = args[0];
     String filename = args[1];
 
-    if (!command.equals("tokenize")) {
+    if(command.equals("tokenize")) {
+      tokenizeFile(filename, true);
+    }
+    else if(command.equals("parse")) {
+      parseFile(filename);
+    }
+    else{
       System.err.println("Unknown command: " + command);
       System.exit(1);
     }
 
+
+  }
+
+  private static void parseFile(String filename) {
+
+    boolean hadError = tokenizeFile(filename, false);
+    Parser parser = new Parser(tokens);
+    Expr expression = parser.parse();
+
+    // Stop if there was a syntax error.
+    if (hadError) return;
+
+    System.out.println(new AstPrinter().print(expression));
+
+
+  }
+
+  private static boolean tokenizeFile(String filename, boolean print) {
     String fileContents = "";
     try {
       fileContents = Files.readString(Path.of(filename));
@@ -73,125 +99,122 @@ public class Main {
       System.exit(1);
     }
 
-    // Uncomment this block to pass the first stage
 
-     if (!fileContents.isEmpty()) {
-       List<Token> tokens = new java.util.ArrayList<>(List.of());
-//       grammarInit();
+    if (!fileContents.isEmpty()) {
 
-       boolean syntaxError = false;
-       String token;
-       TokenType tokenType;
-       Character curChar;
+      boolean syntaxError = false;
+      String token;
+      TokenType tokenType;
+      Character curChar;
 
-       int lineNo = 1;
+      int lineNo = 1;
 
-       for(int i = 0; i<fileContents.length(); i++){
+      for(int curInd = 0; curInd<fileContents.length(); curInd++){
+        curChar = fileContents.charAt(curInd);
 
-         curChar = fileContents.charAt(i);
+        if(Character.isWhitespace(curChar) ||
+                Character.isSpaceChar(curChar)){
+          if(curChar.equals('\n')) lineNo++;
+          continue;
+        }
 
-         if(Character.isWhitespace(curChar) ||
-           Character.isSpaceChar(curChar)){
-           if(curChar.equals('\n')) lineNo++;
-           continue;
-         }
+        token = String.valueOf(curChar);
 
-         token = String.valueOf(curChar);
+        if(lexGrammar.containsKey(curChar))
+        {
 
-         if(lexGrammar.containsKey(curChar))
-         {
+          tokenType = lexGrammar.get(curChar);
 
-           tokenType = lexGrammar.get(curChar);
+          if (fileContents.startsWith("//", curInd)){
+            if(fileContents.indexOf("\n", curInd)!=-1){
+              curInd = fileContents.indexOf("\n", curInd);
+              lineNo+=1;
+              continue;
+            }
+            break;
+          }
 
-           if (fileContents.startsWith("//", i)){
-             if(fileContents.indexOf("\n", i)!=-1){
-               i = fileContents.indexOf("\n", i);
-               lineNo+=1;
-               continue;
-             }
-             break;
-           }
+          Token longerLex = checkLongerLex(fileContents, curInd, lineNo);
 
-           Token longerLex = checkLongerLex(fileContents, i, lineNo);
+          if(longerLex!=null){
+            tokens.add(longerLex);
+            curInd++;
+          }
+          else if(curChar.equals('"')){
 
-           if(longerLex!=null){
-             tokens.add(longerLex);
-             i++;
-           }
-           else if(curChar.equals('"')){
+            int strLiteralEndInd = fileContents.indexOf('"', curInd+1);
+            if(strLiteralEndInd == -1){
+              if(print) System.err.println("[line "+lineNo+"] Error: Unterminated string.");
+              syntaxError = true;
+              break;
+            }
 
-             int strLiteralEndInd = fileContents.indexOf('"', i+1);
-             if(strLiteralEndInd == -1){
-               System.err.println("[line "+lineNo+"] Error: Unterminated string.");
-               syntaxError = true;
-               break;
-             }
-             String strLiteral = fileContents.substring(i, strLiteralEndInd+1);
-             tokens.add(new Token(TokenType.STRING,
-                                  fileContents.substring(i, strLiteralEndInd+1),
-                                  fileContents.substring(i+1, strLiteralEndInd),
-                                  lineNo));
-             i = strLiteralEndInd;
+            tokens.add(new Token(TokenType.STRING,
+                    fileContents.substring(curInd, strLiteralEndInd+1),
+                    fileContents.substring(curInd+1, strLiteralEndInd),
+                    lineNo));
+            curInd = strLiteralEndInd;
 
-           }
-           else{
-             tokens.add(new Token(tokenType, token, null, lineNo));
-           }
-         }
-         else if(Character.isDigit(curChar)){
-           int startInd = i;
-           while(Character.isDigit(curChar) || curChar.equals('.')){
-             i++;
-             if(i>=fileContents.length()) break;
-             curChar = fileContents.charAt(i);
-           }
-//           if(Character.isAlphabetic(curChar) || curChar.equals('_')){
-//             while(Character.isAlphabetic(curChar) || curChar.equals('_') || Character.isDigit(curChar)){
-//               i++;
-//               if(i>=fileContents.length()) break;
-//               curChar = fileContents.charAt(i);
-//             }
-//             String variable = fileContents.substring(startInd, i);
-//             tokens.add(new Token(keywords.getOrDefault(variable, TokenType.IDENTIFIER),
-//                     variable, null, lineNo));
-//
-//           }
-//           else{
-             String num = fileContents.substring(startInd, i);
-             tokens.add(new Token(TokenType.NUMBER,num, Float.parseFloat(num), lineNo) );
-//           }
+          }
+          else{
+            tokens.add(new Token(tokenType, token, null, lineNo));
+          }
+        }
+        else if(Character.isDigit(curChar)){
+          curInd = tokenizeDigits(curInd, curChar, fileContents, lineNo);
+        }
+        else if(Character.isAlphabetic(curChar) || curChar.equals('_')){
+          curInd = tokenizeWords(curInd, curChar, fileContents, lineNo);
+        }
+        else{
+          if(print) System.err.println("[line "+lineNo+"] Error: Unexpected character: "+token);
+          syntaxError = true;
+        }
+      }
 
-            i--;
-         }
-         else if(Character.isAlphabetic(curChar) || curChar.equals('_')){
-           int startInd = i;
-           while(Character.isAlphabetic(curChar) || curChar.equals('_') || Character.isDigit(curChar)){
-             i++;
-             if(i>=fileContents.length()) break;
-             curChar = fileContents.charAt(i);
-           }
-           String variable = fileContents.substring(startInd, i);
-           tokens.add(new Token(keywords.getOrDefault(variable, TokenType.IDENTIFIER),
-                                variable, null, lineNo));
-           i--;
-         }
-         else{
+      // Print the current tokens
+      for(Token curToken: tokens){
+        if(print) System.out.println(curToken.toString());
+      }
 
-           System.err.println("[line "+lineNo+"] Error: Unexpected character: "+token);
-           syntaxError = true;
-         }
-       }
+      tokens.add(new Token(TokenType.EOF, "", null, lineNo));
+      if(print) System.out.println("EOF  null");
+      if(syntaxError) System.exit(65);
 
-       for(Token curToken: tokens){
-         System.out.println(curToken.toString());
-       }
+      return syntaxError;
+    } else {
+      if(print) System.out.println("EOF  null"); // Placeholder, remove this line when implementing the scanner
+      return true;
+    }
 
-       System.out.println("EOF  null");
-       if(syntaxError) System.exit(65);
+  }
 
-     } else {
-       System.out.println("EOF  null"); // Placeholder, remove this line when implementing the scanner
-     }
+  private static int tokenizeWords(int curInd, Character curChar, String fileContents, int lineNo) {
+    int startInd = curInd;
+    while(Character.isAlphabetic(curChar) || curChar.equals('_') || Character.isDigit(curChar)){
+      curInd++;
+      if(curInd>=fileContents.length()) break;
+      curChar = fileContents.charAt(curInd);
+    }
+    String variable = fileContents.substring(startInd, curInd);
+    tokens.add(new Token(keywords.getOrDefault(variable, TokenType.IDENTIFIER),
+            variable, null, lineNo));
+    curInd--;
+    return curInd;
+  }
+
+  private static int tokenizeDigits(int curInd, Character curChar, String fileContents, int lineNo) {
+    int startInd = curInd;
+    while(Character.isDigit(curChar) || curChar.equals('.')){
+      curInd++;
+      if(curInd>=fileContents.length()) break;
+      curChar = fileContents.charAt(curInd);
+    }
+
+    String num = fileContents.substring(startInd, curInd);
+    tokens.add(new Token(TokenType.NUMBER,num, Float.parseFloat(num), lineNo) );
+    curInd--;
+    return curInd;
   }
 
   private static Token checkLongerLex(String fileContents, int i, int lineNo) {
