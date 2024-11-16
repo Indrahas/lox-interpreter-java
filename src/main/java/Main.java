@@ -8,6 +8,8 @@ import com.interpreter.utils.*;
 public class Main {
   static List<Token> tokens = new java.util.ArrayList<>(List.of());
   private static final HashMap<Character, TokenType> lexGrammar = new HashMap<>();
+  private static boolean hadRuntimeError = false;
+
   static {
     lexGrammar.put('{', TokenType.LEFT_BRACE);
     lexGrammar.put('}', TokenType.RIGHT_BRACE);
@@ -66,7 +68,10 @@ public class Main {
       tokenizeFile(filename, true);
     }
     else if(command.equals("parse")) {
-      parseFile(filename);
+      parseFile(filename, true);
+    }
+    else if(command.equals("evaluate")) {
+      interpretFile(filename, true);
     }
     else{
       System.err.println("Unknown command: " + command);
@@ -76,7 +81,7 @@ public class Main {
 
   }
 
-  private static void parseFile(String filename) {
+  private static Expr parseFile(String filename, boolean print) {
 
     boolean hadError = tokenizeFile(filename, false);
     Parser parser = new Parser(tokens);
@@ -85,11 +90,20 @@ public class Main {
     if(expression == null) System.exit(65);
 
     // Stop if there was a syntax error.
-    if (hadError) return;
+    if (hadError) return null;
 
-    System.out.println(new AstPrinter().print(expression));
+    if(print) {
+      System.out.println(new AstPrinter().print(expression));
+    }
 
+      return expression;
+  }
+  private static void interpretFile(String filename, boolean print) {
 
+    Expr expression = parseFile(filename, false);
+
+    Interpreter interpreter = new Interpreter();
+    interpreter.interpret(expression, print);
   }
 
   private static boolean tokenizeFile(String filename, boolean print) {
@@ -244,6 +258,12 @@ public class Main {
       }
     }
     return null;
+  }
+
+  static void runtimeError(RuntimeError error) {
+    System.err.println(error.getMessage() +
+            "\n[line " + error.token.line + "]");
+    hadRuntimeError = true;
   }
 
 
