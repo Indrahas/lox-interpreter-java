@@ -6,8 +6,10 @@ import java.util.List;
  public interface Visitor<R> {
    R visitBlockStmt(Block stmt);
    R visitExpressionStmt(Expression stmt);
+   R visitIfStmt(If stmt);
    R visitPrintStmt(Print stmt);
    R visitVarStmt(Var stmt);
+   R visitWhileStmt(While stmt);
   }
  public static class Block extends Stmt {
    public Block(List<Stmt> statements) {
@@ -32,6 +34,22 @@ import java.util.List;
     }
 
    public final Expr expression;
+  }
+ public static class If extends Stmt {
+   public If(Expr condition, Stmt thenBranch, Stmt elseBranch) {
+      this.condition = condition;
+      this.thenBranch = thenBranch;
+      this.elseBranch = elseBranch;
+    }
+
+    @Override
+  public  <R> R accept(Visitor<R> visitor) {
+      return visitor.visitIfStmt(this);
+    }
+
+   public final Expr condition;
+   public final Stmt thenBranch;
+   public final Stmt elseBranch;
   }
  public static class Print extends Stmt {
    public Print(Expr expression) {
@@ -58,6 +76,20 @@ import java.util.List;
 
    public final Token name;
    public final Expr initializer;
+  }
+ public static class While extends Stmt {
+   public While(Expr condition, Stmt body) {
+      this.condition = condition;
+      this.body = body;
+    }
+
+    @Override
+  public  <R> R accept(Visitor<R> visitor) {
+      return visitor.visitWhileStmt(this);
+    }
+
+   public final Expr condition;
+   public final Stmt body;
   }
 
  public abstract <R> R accept(Visitor<R> visitor);
