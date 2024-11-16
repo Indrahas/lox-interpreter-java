@@ -228,7 +228,7 @@ public class Main {
     }
 
     String num = fileContents.substring(startInd, curInd);
-    tokens.add(new Token(TokenType.NUMBER,num, Float.parseFloat(num), lineNo) );
+    tokens.add(new Token(TokenType.NUMBER,num, Double.parseDouble(num), lineNo) );
     curInd--;
     return curInd;
   }

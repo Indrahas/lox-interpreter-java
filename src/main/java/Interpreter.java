@@ -12,11 +12,9 @@ public class Interpreter implements Expr.Visitor<Object>{
 
     private String stringify(Object object) {
         if (object == null) return "nil";
-//        System.out.println(object instanceof Float);
-        if (object instanceof Double || object instanceof Float) {
+
+        if (object instanceof Double) {
             String text = object.toString();
-//            System.out.println("HAI");
-//            System.out.println(text.substring(0, text.length() - 2));
             if (text.endsWith(".0")) {
                 text = text.substring(0, text.length() - 2);
             }
@@ -50,9 +48,6 @@ public class Interpreter implements Expr.Visitor<Object>{
                 return (double)left - (double)right;
             case PLUS:
                 if (left instanceof Double && right instanceof Double) {
-                    return (double)left + (double)right;
-                }
-                if (left instanceof Float && right instanceof Float) {
                     return (double)left + (double)right;
                 }
 
@@ -120,14 +115,12 @@ public class Interpreter implements Expr.Visitor<Object>{
 
     private void checkNumberOperand(Token operator, Object operand) {
         if (operand instanceof Double) return;
-        if (operand instanceof Float) return;
         throw new RuntimeError(operator, "Operand must be a number.");
     }
 
     private void checkNumberOperands(Token operator,
                                      Object left, Object right) {
         if (left instanceof Double && right instanceof Double) return;
-        if (left instanceof Float && right instanceof Float) return;
 
         throw new RuntimeError(operator, "Operands must be numbers.");
     }
