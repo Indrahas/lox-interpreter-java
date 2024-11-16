@@ -72,6 +72,7 @@ public class Main {
     }
     else if(command.equals("evaluate")) {
       interpretFile(filename, true);
+      if(hadRuntimeError) System.exit(70);
     }
     else{
       System.err.println("Unknown command: " + command);

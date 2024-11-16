@@ -44,7 +44,7 @@ public class Interpreter implements Expr.Visitor<Object>{
                 return (double)left <= (double)right;
             case MINUS:
                 checkNumberOperands(expr.operator, left, right);
-                checkNumberOperand(expr.operator, right);
+
                 return (double)left - (double)right;
             case PLUS:
                 if (left instanceof Double && right instanceof Double) {
@@ -89,6 +89,7 @@ public class Interpreter implements Expr.Visitor<Object>{
             case BANG:
                 return !isTruthy(right);
             case MINUS:
+                checkNumberOperand(expr.operator, right);
                 return -(double)right;
         }
 
