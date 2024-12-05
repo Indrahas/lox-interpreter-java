@@ -57,7 +57,7 @@ public class Main {
 //    System.err.println("Logs from your program will appear here!");
 
     if (args.length < 2) {
-      System.err.println("Usage: ./your_program.sh tokenize <filename>");
+      System.err.println("Usage: ./interpreter.sh tokenize <filename>");
       System.exit(1);
     }
 
